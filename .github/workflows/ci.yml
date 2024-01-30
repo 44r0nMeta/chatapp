@@ -42,3 +42,4 @@ jobs:
           cd /home/meta/domains/meta.serv00.net/public_html/chatapp
           git pull origin main
           php artisan optimize
+        use_insecure_cipher: true
