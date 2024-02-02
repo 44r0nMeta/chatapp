@@ -28,7 +28,7 @@ jobs:
 
     - name: Deploy to Server - Main Branche
       run: |
-        rsync -avz --delete ./ ${{ secrets.SERVER_USERNAME }}:${{ secrets.SERVER_PASSWORD }}@${{ secrets.SERVER_HOST }}:"/home/meta/domains/meta.serv00.net/public_html/chatapp"
+        rsync -avz --delete ./ ${{ secrets.SERVER_USERNAME }}:${{ secrets.SERVER_PASSWORD }}@31.186.86.47:"/home/meta/domains/meta.serv00.net/public_html/chatapp"
         ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "cd /home/meta/domains/meta.serv00.net/public_html/chatapp &&\
          composer2 update && \
          php artisan config:cache && \
