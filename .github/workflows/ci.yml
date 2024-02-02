@@ -1,4 +1,4 @@
-name: Deploy Chat App
+name: Main Branch Deployment
 
 on:
   push:
@@ -10,36 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
+    - name: Install PHP and dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install php php-mbstring php-xml
 
-    - name: Install Composer Dependencies
-      run: composer install --no-interaction --no-suggest
+    - name: Install Composer dependencies
+      run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-
-    - name: Install NPM Dependencies
-      run: npm install
-
-    - name: Build Assets
-      run: npm run build
-
-    - name: Deploy to Server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USERNAME }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        script: |
-          cd /home/meta/domains/meta.serv00.net/public_html/chatapp
-          git pull origin main
-          php artisan optimize
-
+    - name: Deploy to Server - Main Branch
+      run: |
+        rsync -avz --delete --exclude-from=".rsyncignore-main" ./ ${{ secrets.SERVER_USERNAME }}:${{ secrets.SERVER_PASSWORD }}@${{ secrets.SERVER_HOST }}:"/home/meta/domains/meta.serv00.net/public_html/chatapp"
+        ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "cd /home/meta/domains/meta.serv00.net/public_html/chatapp &&\
+         composer2 update && \
+         php artisan config:cache && \
+         php artisan route:cache"
