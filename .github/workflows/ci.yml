@@ -28,5 +28,8 @@ jobs:
 
     - name: Deploy to Server
       run: |
-        sshpass -p "${{ secrets.SERVER_PASSWORD }}" rsync -avz ./ ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:domains/meta.serv00.net/public_html/chatapp/
-        sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} 'pwd'
+        sshpass -p "${{ secrets.SERVER_PASSWORD }}" rsync -avz ./ ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:/usr/home/domains/meta.serv00.net/public_html/chatapp/
+        sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} 'cd /usr/home/meta/domains/meta.serv00.net/public_html/chatapp/ && \
+         composer install --no-interaction --prefer-dist --optimize-autoloader && \
+         php artisan config:cache && \
+         php artisan route:cache'
